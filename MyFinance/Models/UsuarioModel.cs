@@ -15,17 +15,6 @@ namespace MyFinance.Models
         public string Senha { get; set; }
         public DateTime DataNascimento { get; set; }
 
-        public UsuarioModel()
-        {
-        }
-        public UsuarioModel(int id, string nome, string email, string senha)
-        {
-            Id = id;
-            Nome = nome;
-            Email = email;
-            Senha = senha;
-        }
-
         public bool ValidarLogin()
         {
             string query = $"select Id, Nome, Data_Nascimento from Usuario where Email = '{Email}' and Senha = '{Senha}'";
@@ -36,6 +25,9 @@ namespace MyFinance.Models
             {
                 if(dt.Rows.Count == 1)
                 {
+                    Id = int.Parse(dt.Rows[0]["Id"].ToString());
+                    Nome = dt.Rows[0]["Nome"].ToString();
+                    DataNascimento = DateTime.Parse(dt.Rows[0]["Data_Nascimento"].ToString());
                     return true;
                 }
             }

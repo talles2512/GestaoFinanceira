@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 </head>
-<body>
+<body onload="CarregarUsuarioLogado()">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -34,6 +34,13 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                 </ul>
+
+                @using Microsoft.AspNetCore.Http;
+                @inject IHttpContextAccessor HttpContextAcessor
+
+                <div style="color:#ffffff; text-align:right; height: 50px; padding-top:15px; ">
+                    <div id="NomeUsuarioLogado"></div>
+                </div>
             </div>
         </div>
     </nav>
@@ -67,5 +74,17 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+
+    <script>
+    function CarregarUsuarioLogado() {
+        var nome = '@HttpContextAcessor.HttpContext.Session.GetString("NomeUsuarioLogado")';
+
+        if (!nome == "")
+        {
+            document.getElementById('NomeUsuarioLogado').innerHTML = "Olá, " + nome + " <a href='Usuario/Login/0'>(Sair)</a>";
+        }
+
+    }
+    </script>
 </body>
 </html>
