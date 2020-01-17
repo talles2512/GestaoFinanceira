@@ -1,6 +1,7 @@
 ﻿using MyFinance.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,9 +11,17 @@ namespace MyFinance.Models
     public class UsuarioModel
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Informe seu Nome!")]
         public string Nome { get; set; }
+
+        [Required(ErrorMessage = "Informe seu Email!")]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "Informe sua Senha!")]
         public string Senha { get; set; }
+
+        [Required(ErrorMessage = "Informe sua Data de Nascimento!")]
         public DateTime DataNascimento { get; set; }
 
         public bool ValidarLogin()
@@ -33,6 +42,15 @@ namespace MyFinance.Models
             }
 
             return false;
+        }
+
+        public void RegistrarUsuario()
+        {
+            string data = $"{DataNascimento.Year}/{DataNascimento.Month}/{DataNascimento.Day}";
+            string query = $"insert into Usuario(Nome,Email,Senha,Data_Nascimento)" +
+                $"values('{Nome}','{Email}','{Senha}','{data}')";
+            DAL objDAL = new DAL();
+            objDAL.NoQuery(query);
         }
     }
 }
