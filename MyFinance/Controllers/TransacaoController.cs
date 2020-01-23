@@ -24,6 +24,20 @@ namespace MyFinance.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult CriarTransacao(int? id, int? contaId, int? planoContasId)
+        {
+            TransacaoModel obj = new TransacaoModel(HttpContextAccessor);
+            ViewBag.Contas = obj.CarregarContas();
+            ViewBag.PlanoContas = obj.CarregarPlanoContas();
+
+            if (id != null && contaId != null && planoContasId != null)
+            {
+                ViewBag.Registro = obj.CarregarRegistro(id, contaId, planoContasId);
+            }
+            return View();
+        }
+
         public IActionResult Extrato()
         {
             return View();

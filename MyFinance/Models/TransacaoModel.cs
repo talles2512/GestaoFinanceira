@@ -83,19 +83,62 @@ namespace MyFinance.Models
             objDAL.NoQuery(query);
         }
 
-        public PlanoContaModel CarregarRegistro(int? id)
+        public TransacaoModel CarregarRegistro(int? id, int? contaId, int? planoContaId)
         {
-            string query = "select Id, Descricao, Tipo, Usuario_Id from PlanoContas where Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado")
-                + " and Id = " + id;
+            string query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
+                " from Transacao T inner join Conta C on T.Conta_Id = C.Id inner join PlanoContas P on T.PlanoContas_Id = P.Id" +
+                " where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
+                " and Conta_Id = " + contaId + " and PlanoContas_Id = " + planoContaId + " and Id = " + id;
             DAL objDAL = new DAL();
             DataTable dt = objDAL.Reader(query);
-            PlanoContaModel planoConta = new PlanoContaModel();
-            planoConta.Id = int.Parse(dt.Rows[0]["Id"].ToString());
-            planoConta.Descricao = dt.Rows[0]["Descricao"].ToString();
-            planoConta.Tipo = dt.Rows[0]["Tipo"].ToString();
-            planoConta.UsuarioId = int.Parse(dt.Rows[0]["Usuario_Id"].ToString());
+            TransacaoModel transacao = new TransacaoModel();
+            transacao.Id = int.Parse(dt.Rows[0]["Id"].ToString());
+            transacao.Data = DateTime.Parse(dt.Rows[0]["Data"].ToString());
+            transacao.Tipo = dt.Rows[0]["Tipo"].ToString();
+            transacao.Valor = double.Parse(dt.Rows[0]["Valor"].ToString());
+            transacao.Descricao = dt.Rows[0]["Historico"].ToString();
+            transacao.ContaId = int.Parse(dt.Rows[0]["Conta_Id"].ToString());
+            transacao.NomeConta = dt.Rows[0]["Conta"].ToString();
+            transacao.PlanoContasId = int.Parse(dt.Rows[0]["PlanoContas_Id"].ToString());
+            transacao.DescricaoPlanoConta = dt.Rows[0]["Plano_Conta"].ToString();
 
-            return planoConta;
+            return transacao;
+        }
+
+        public List<PlanoContaModel> CarregarPlanoContas()
+        {
+            List<PlanoContaModel> lista = new List<PlanoContaModel>();
+
+            string query = "select Id, Descricao from PlanoContas where Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado");
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            DataRow[] rows = dt.Select();
+            foreach (DataRow row in rows)
+            {
+                PlanoContaModel planoConta = new PlanoContaModel();
+                planoConta.Id = int.Parse(row["Id"].ToString());
+                planoConta.Descricao = row["Descricao"].ToString();
+                lista.Add(planoConta);
+            }
+            return lista;
+        }
+
+        public List<ContaModel> CarregarContas()
+        {
+            List<ContaModel> lista = new List<ContaModel>();
+
+            string query = "select Id, Nome from Conta where Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado");
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            DataRow[] rows = dt.Select();
+            foreach (DataRow row in rows)
+            {
+                ContaModel conta = new ContaModel();
+                conta.Id = int.Parse(row["Id"].ToString());
+                conta.Nome = row["Nome"].ToString();
+                lista.Add(conta);
+            }
+            return lista;
         }
 
         public void AlterarPlanoConta()

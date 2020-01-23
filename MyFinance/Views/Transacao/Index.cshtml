@@ -34,8 +34,8 @@
                     <td>@item.NomeConta.ToString()</td>
                     <td>@item.DescricaoPlanoConta.ToString()</td>
                     <td>
-                        <button type="button" class="btn btn-primary" onclick="Editar(@item.Id.ToString())">Editar</button>
-                        <button type="button" class="btn btn-danger" onclick="Excluir(@item.Id.ToString())">Excluir</button>
+                        <button type="button" class="btn btn-primary" onclick="Editar(@item.Id.ToString(), @item.ContaId.ToString(), @item.PlanoContasId.ToString())">Editar</button>
+                        <button type="button" class="btn btn-danger" onclick="Excluir(@item.Id.ToString(), @item.ContaId.ToString(), @item.PlanoContasId.ToString())">Excluir</button>
                     </td>
                 </tr>
 
@@ -47,12 +47,12 @@
 <button type="button" class="btn btn-block btn-primary" onclick="location.href = '..\\Transacao\\CriarTransacao'">Criar Transação</button>
 
 <script>
-    function Excluir(id) {
-        window.location.href = "../Transacao/ExcluirTransacao/" + id;
+    function Excluir(id, conta_id, plano_conta_id) {
+        window.location.href = "../PlanoConta/ExcluirPlanoConta?id=" + id + "&contaId=" + conta_id + "&planoContasId=" + plano_conta_id;
     }
 
-    function Editar(id) {
-        window.location.href = "../Transacao/CriarTransacao/" + id;
+    function Editar(id, conta_id, plano_conta_id) {
+        window.location.href = "../PlanoConta/CriarPlanoConta/" + id + "&contaId=" + conta_id + "&planoContasId=" + plano_conta_id;
     }
 </script>
 
