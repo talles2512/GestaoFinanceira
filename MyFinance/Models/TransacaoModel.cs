@@ -20,9 +20,12 @@ namespace MyFinance.Models
 
         [Required(ErrorMessage = "Informe a descrição da transação!")]
         public string Descricao { get; set; }
-        
+
+        [Required(ErrorMessage = "Informe a conta da transação!")]
         public int ContaId { get; set; }
         public string NomeConta { get; set; }
+
+        [Required(ErrorMessage = "Informe o plano de contas da transação!")]
         public int PlanoContasId { get; set; }
         public string DescricaoPlanoConta { get; set; }
 
@@ -67,11 +70,12 @@ namespace MyFinance.Models
             return lista;
         }
 
-        public void RegistrarPlanoConta()
+        public void RegistrarTransacao()
         {
+            string data = $"{Data.Year}/{Data.Month}/{Data.Day}";
             int id = int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"));
-            string query = $"insert into PlanoContas(Descricao,Tipo,Usuario_Id)" +
-                $"values('{Descricao}','{Tipo}',{id})";
+            string query = $"insert into Transacao(Data, Tipo, Valor, Descricao, Conta_Id, PlanoContas_Id, Usuario_Id) " +
+                $"values('{data}', '{Tipo}', {Valor}, '{Descricao}', {ContaId}, {PlanoContasId}, {id})";
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }
@@ -83,12 +87,11 @@ namespace MyFinance.Models
             objDAL.NoQuery(query);
         }
 
-        public TransacaoModel CarregarRegistro(int? id, int? contaId, int? planoContaId)
+        public TransacaoModel CarregarRegistro(int? id)
         {
             string query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
                 " from Transacao T inner join Conta C on T.Conta_Id = C.Id inner join PlanoContas P on T.PlanoContas_Id = P.Id" +
-                " where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
-                " and Conta_Id = " + contaId + " and PlanoContas_Id = " + planoContaId + " and Id = " + id;
+                " where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") + " and T.Id = " + id;
             DAL objDAL = new DAL();
             DataTable dt = objDAL.Reader(query);
             TransacaoModel transacao = new TransacaoModel();
@@ -141,10 +144,12 @@ namespace MyFinance.Models
             return lista;
         }
 
-        public void AlterarPlanoConta()
+        public void AlterarTransacao()
         {
+            string data = $"{Data.Year}/{Data.Month}/{Data.Day}";
             int id = int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"));
-            string query = $"update PlanoContas set Descricao = '{Descricao}',Tipo = '{Tipo}' where Usuario_Id = {id} and Id = {Id}";
+            string query = $"update Transacao set Data = '{data}',Tipo = '{Tipo}',Valor = {Valor}, Descricao = '{Descricao}', Conta_Id = {ContaId}," +
+                $" PlanoContas_Id = {PlanoContasId} where Usuario_Id = {id} and Id = {Id}";
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }

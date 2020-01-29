@@ -24,16 +24,39 @@ namespace MyFinance.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult CriarTransacao(TransacaoModel transacao)
+        {
+            if (ModelState.IsValid)
+            {
+                transacao.HttpContextAccessor = HttpContextAccessor;
+                if (transacao.Id != 0)
+                {
+                    transacao.AlterarTransacao();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    transacao.RegistrarTransacao();
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                return View();
+            }
+        }
+
         [HttpGet]
-        public IActionResult CriarTransacao(int? id, int? contaId, int? planoContasId)
+        public IActionResult CriarTransacao(int? id)
         {
             TransacaoModel obj = new TransacaoModel(HttpContextAccessor);
             ViewBag.Contas = obj.CarregarContas();
             ViewBag.PlanoContas = obj.CarregarPlanoContas();
 
-            if (id != null && contaId != null && planoContasId != null)
+            if (id != null)
             {
-                ViewBag.Registro = obj.CarregarRegistro(id, contaId, planoContasId);
+                ViewBag.Registro = obj.CarregarRegistro(id);
             }
             return View();
         }
