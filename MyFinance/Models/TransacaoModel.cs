@@ -80,9 +80,9 @@ namespace MyFinance.Models
             objDAL.NoQuery(query);
         }
 
-        public void ExcluirPlanoConta(int id)
+        public void ExcluirTransacao(int id)
         {
-            string query = "delete from PlanoContas where Id =" + id;
+            string query = "delete from Transacao where Id =" + id;
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }
@@ -153,5 +153,6 @@ namespace MyFinance.Models
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }
+
     }
 }
