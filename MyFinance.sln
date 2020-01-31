@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFinance", "MyFinance\MyFinance.csproj", "{7AF7693F-9B84-4A08-85E7-202E60733304}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFinance", "MyFinance\MyFinance.csproj", "{7AF7693F-9B84-4A08-85E7-202E60733304}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{E885F787-EC3A-409C-A8AF-E11D289B1144}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7AF7693F-9B84-4A08-85E7-202E60733304}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF7693F-9B84-4A08-85E7-202E60733304}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF7693F-9B84-4A08-85E7-202E60733304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E885F787-EC3A-409C-A8AF-E11D289B1144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E885F787-EC3A-409C-A8AF-E11D289B1144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E885F787-EC3A-409C-A8AF-E11D289B1144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E885F787-EC3A-409C-A8AF-E11D289B1144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

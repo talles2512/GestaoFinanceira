@@ -40,7 +40,7 @@ namespace MyFinance.Models
             DAL objDAL = new DAL();
             DataTable dt = objDAL.Reader(query);
             DataRow[] rows = dt.Select();
-            foreach(DataRow row in rows)
+            foreach (DataRow row in rows)
             {
                 ContaModel conta = new ContaModel();
                 conta.Id = int.Parse(row["Id"].ToString());
@@ -66,6 +66,19 @@ namespace MyFinance.Models
             string query = "delete from Conta where Id =" + id;
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
+        }
+
+        public ContaModel GetConta(int id)
+        {
+            string query = "select Id, Nome, Saldo, Usuario_Id from Conta where Usuario_Id = 1 and Id = " + id;
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            ContaModel conta = new ContaModel();
+            conta.Id = int.Parse(dt.Rows[0]["Id"].ToString());
+            conta.Nome = dt.Rows[0]["Nome"].ToString();
+            conta.Saldo = double.Parse(dt.Rows[0]["Saldo"].ToString());
+            conta.UsuarioId = int.Parse(dt.Rows[0]["Usuario_Id"].ToString());
+            return conta;
         }
     }
 }
