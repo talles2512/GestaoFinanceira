@@ -48,49 +48,67 @@
 
 @{
     var check = ViewBag.ListaTransacoes;
+    var saldo = 0.00;
     if (check != null)
     {
         var checkList = (List<TransacaoModel>)ViewBag.ListaTransacoes;
         if (checkList.Count != 0)
         {
-            <div class="container">
-                <table class="table table-bordered">
-                    <thead>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Histórico</th>
+                    <th>Nome da Conta</th>
+                    <th>Descrição do Plano de Contas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var item in (List<TransacaoModel>)ViewBag.ListaTransacoes)
+                    {
                         <tr>
-                            <th>Id</th>
-                            <th>Data</th>
-                            <th>Tipo</th>
-                            <th>Valor</th>
-                            <th>Histórico</th>
-                            <th>Nome da Conta</th>
-                            <th>Descrição do Plano de Contas</th>
+                            <td>@item.Id.ToString()</td>
+                            <td>@item.Data.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
+                            <td>@item.Tipo.ToString().Replace("R", "Receita").Replace("D", "Despesa")</td>
+                            <td>R$ @item.Valor.ToString()</td>
+                            <td>@item.Descricao.ToString()</td>
+                            <td>@item.NomeConta.ToString()</td>
+                            <td>@item.DescricaoPlanoConta.ToString()</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            foreach (var item in (List<TransacaoModel>)ViewBag.ListaTransacoes)
-                            {
-                                <tr>
-                                    <td>@item.Id.ToString()</td>
-                                    <td>@item.Data.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
-                                    <td>@item.Tipo.ToString().Replace("R", "Receita").Replace("D", "Despesa")</td>
-                                    <td>R$ @item.Valor.ToString()</td>
-                                    <td>@item.Descricao.ToString()</td>
-                                    <td>@item.NomeConta.ToString()</td>
-                                    <td>@item.DescricaoPlanoConta.ToString()</td>
-                                </tr>
-
-                            }
+                        if (@item.Tipo.ToString() == "R")
+                        {
+                            saldo += double.Parse(item.Valor.ToString());
                         }
-                    </tbody>
-                </table>
+                        else
+                        {
+                            saldo -= double.Parse(item.Valor.ToString());
+                        }
+                    }
+                }
+            </tbody>
+        </table>
 
-                <h3><strong>Saldo:</strong></h3>
-            </div>
-                                }
-                                else
-                                {
-                                    <p class="text-center">Nenhum registro de transação encontrado...</p>
-                                }
+
+        @{
+            if (saldo >= 0)
+            {
+                <h3><strong>Saldo: <strong style="color: limegreen;">R$ @saldo</strong><strong style="color: limegreen;">.00</strong></strong></h3>
+            }
+            else
+            {
+                <h3><strong>Saldo: <strong style="color: red;">R$ @saldo</strong><strong style="color: red;">.00</strong></strong></h3>
+            }
+        }
+    </div>
+        }
+        else
+        {
+            <p class="text-center">Nenhum registro de transação encontrado...</p>
+        }
     }
 }
