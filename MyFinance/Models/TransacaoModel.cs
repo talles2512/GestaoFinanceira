@@ -14,6 +14,7 @@ namespace MyFinance.Models
         public int Id { get; set; }
         [Required(ErrorMessage = "Informe a data da transação!")]
         public DateTime Data { get; set; }
+        public DateTime DataFinal { get; set; }
         public string Tipo { get; set; }
         [Required(ErrorMessage = "Informe o valor da transação!")]
         public double Valor { get; set; }
@@ -50,6 +51,48 @@ namespace MyFinance.Models
                 " from Transacao T inner join Conta C on T.Conta_Id = C.Id " +
                 "inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
                 " order by t.Data desc limit 10";
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            DataRow[] rows = dt.Select();
+            foreach (DataRow row in rows)
+            {
+                TransacaoModel transacao = new TransacaoModel();
+                transacao.Id = int.Parse(row["Id"].ToString());
+                transacao.Data = DateTime.Parse(row["Data"].ToString());
+                transacao.Tipo = row["Tipo"].ToString();
+                transacao.Valor = double.Parse(row["Valor"].ToString());
+                transacao.Descricao = row["Historico"].ToString();
+                transacao.ContaId = int.Parse(row["Conta_Id"].ToString());
+                transacao.NomeConta = row["Conta"].ToString();
+                transacao.PlanoContasId = int.Parse(row["PlanoContas_Id"].ToString());
+                transacao.DescricaoPlanoConta = row["Plano_Conta"].ToString();
+                lista.Add(transacao);
+            }
+            return lista;
+        }
+
+        public List<TransacaoModel> EmitirExtrato()
+        {
+            List<TransacaoModel> lista = new List<TransacaoModel>();
+            string data = $"{Data.Year}/{Data.Month}/{Data.Day}";
+            string dataFinal = $"{DataFinal.Year}/{DataFinal.Month}/{DataFinal.Day}";
+
+            string query;
+            if (Tipo == "A")
+            {
+                query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
+                " from Transacao T inner join Conta C on T.Conta_Id = C.Id " +
+                "inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
+                $" and (T.Data between '{data}' and '{dataFinal}') and T.Conta_Id = {ContaId} order by t.Data desc limit 10";
+            }
+            else
+            {
+                query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
+                " from Transacao T inner join Conta C on T.Conta_Id = C.Id " +
+                "inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
+                $" and (T.Data between '{data}' and '{dataFinal}') and T.Conta_Id = {ContaId} and T.Tipo = '{Tipo}' order by t.Data desc limit 10";
+            }
+
             DAL objDAL = new DAL();
             DataTable dt = objDAL.Reader(query);
             DataRow[] rows = dt.Select();

@@ -76,8 +76,26 @@ namespace MyFinance.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public IActionResult Extrato()
         {
+            TransacaoModel obj = new TransacaoModel(HttpContextAccessor);
+            ViewBag.ListaTransacoes = null;
+            ViewBag.Contas = obj.CarregarContas();
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Extrato(TransacaoModel transacao)
+        {
+            transacao.HttpContextAccessor = HttpContextAccessor;
+            ViewBag.Contas = transacao.CarregarContas();
+
+            if (transacao.Data.Year != 1 && transacao.DataFinal.Year != 1)
+                ViewBag.ListaTransacoes = transacao.EmitirExtrato();
+            else
+                ViewBag.ListaTransacoes = null;
+
             return View();
         }
 

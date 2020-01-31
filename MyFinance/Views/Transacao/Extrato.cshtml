@@ -1,7 +1,96 @@
-﻿
+﻿@model TransacaoModel
+
+<h3>Meu Extrato</h3>
+
+<div class="container">
+    <form asp-controller="Transacao" asp-action="Extrato">
+        <div>
+            <div class="form-group">
+                <label for="data">Data inicial:</label>
+                <input type="date" class="form-control" asp-for="Data">
+                <span asp-validation-for="Data" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="data">Data final:</label>
+                <input type="date" class="form-control" asp-for="DataFinal">
+                <span asp-validation-for="DataFinal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="tipo">Tipo:</label>
+                <br />
+                <div class="radio">
+                    <label><input id="radioA" type="radio" name="tipo" asp-for="Tipo" value="A" checked> Receita e Despesa</label>
+                </div>
+                <div class="radio">
+                    <label><input id="radioR" type="radio" name="tipo" asp-for="Tipo" value="R"> Receita</label>
+                </div>
+                <div class="radio">
+                    <label><input id="radioD" type="radio" name="tipo" asp-for="Tipo" value="D"> Despesa</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="conta">Conta:</label>
+                <br />
+                <select class="form-control" asp-for="ContaId" id="contas">
+                    @{
+                        foreach (var item in (List<ContaModel>)ViewBag.Contas)
+                        {
+                            <option value="@item.Id.ToString()">@item.Nome.ToString()</option>
+                        }
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-block btn-success">Emitir Extrato</button>
+        </div>
+    </form>
+</div>
+<br />
+
 @{
-    ViewData["Title"] = "Extrato";
+    var check = ViewBag.ListaTransacoes;
+    if (check != null)
+    {
+        var checkList = (List<TransacaoModel>)ViewBag.ListaTransacoes;
+        if (checkList.Count != 0)
+        {
+            <div class="container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Histórico</th>
+                            <th>Nome da Conta</th>
+                            <th>Descrição do Plano de Contas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (var item in (List<TransacaoModel>)ViewBag.ListaTransacoes)
+                            {
+                                <tr>
+                                    <td>@item.Id.ToString()</td>
+                                    <td>@item.Data.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                    <td>@item.Tipo.ToString().Replace("R", "Receita").Replace("D", "Despesa")</td>
+                                    <td>R$ @item.Valor.ToString()</td>
+                                    <td>@item.Descricao.ToString()</td>
+                                    <td>@item.NomeConta.ToString()</td>
+                                    <td>@item.DescricaoPlanoConta.ToString()</td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <h3><strong>Saldo:</strong></h3>
+            </div>
+                                }
+                                else
+                                {
+                                    <p class="text-center">Nenhum registro de transação encontrado...</p>
+                                }
+    }
 }
-
-<h2>Extrato</h2>
-
