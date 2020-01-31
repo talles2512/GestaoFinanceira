@@ -26,15 +26,7 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddCors(options =>
-                options.AddPolicy("_myAllowSpecificOrigins",
-                builder =>
-                {
-                    builder.WithOrigins("http://myfinance.teste.api")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-                })
-            );
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +37,7 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("_myAllowSpecificOrigins");
+            app.UseCors(option => option.AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 
