@@ -77,21 +77,27 @@ namespace MyFinance.Models
             string data = $"{Data.Year}/{Data.Month}/{Data.Day}";
             string dataFinal = $"{DataFinal.Year}/{DataFinal.Month}/{DataFinal.Day}";
 
+            string filtro = "";
+
+            if (Data.Year != 1 && DataFinal.Year != 1)
+            {
+                filtro += $" and (T.Data between '{data}' and '{dataFinal}')";
+            }
+            if (Tipo != "A")
+            {
+                filtro += $" and T.Tipo = '{Tipo}'";
+            }
+            if (ContaId != 0)
+            {
+                filtro += $" and T.Conta_Id = {ContaId}";
+            }
+
             string query;
-            if (Tipo == "A")
-            {
-                query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
-                " from Transacao T inner join Conta C on T.Conta_Id = C.Id " +
-                "inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
-                $" and (T.Data between '{data}' and '{dataFinal}') and T.Conta_Id = {ContaId} order by t.Data desc limit 10";
-            }
-            else
-            {
-                query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
-                " from Transacao T inner join Conta C on T.Conta_Id = C.Id " +
-                "inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
-                $" and (T.Data between '{data}' and '{dataFinal}') and T.Conta_Id = {ContaId} and T.Tipo = '{Tipo}' order by t.Data desc limit 10";
-            }
+
+            query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
+            " from Transacao T inner join Conta C on T.Conta_Id = C.Id" +
+            " inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Usuario_Id = " + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
+            $" {filtro} order by t.Data desc limit 10";
 
             DAL objDAL = new DAL();
             DataTable dt = objDAL.Reader(query);
@@ -197,5 +203,79 @@ namespace MyFinance.Models
             objDAL.NoQuery(query);
         }
 
+
+        public TransacaoModel GetTransacao(int id)
+        {
+            string query = "select T.Id, T.Data, T.Tipo, T.Valor, T.Descricao as Historico, T.Conta_Id, C.Nome as Conta, T.PlanoContas_Id, P.Descricao as Plano_Conta" +
+                " from Transacao T inner join Conta C on T.Conta_Id = C.Id inner join PlanoContas P on T.PlanoContas_Id = P.Id" +
+                " where T.Usuario_Id = 1 and T.Id = " + id;
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            TransacaoModel transacao = new TransacaoModel();
+            transacao.Id = int.Parse(dt.Rows[0]["Id"].ToString());
+            transacao.Data = DateTime.Parse(dt.Rows[0]["Data"].ToString());
+            transacao.Tipo = dt.Rows[0]["Tipo"].ToString();
+            transacao.Valor = double.Parse(dt.Rows[0]["Valor"].ToString());
+            transacao.Descricao = dt.Rows[0]["Historico"].ToString();
+            transacao.ContaId = int.Parse(dt.Rows[0]["Conta_Id"].ToString());
+            transacao.NomeConta = dt.Rows[0]["Conta"].ToString();
+            transacao.PlanoContasId = int.Parse(dt.Rows[0]["PlanoContas_Id"].ToString());
+            transacao.DescricaoPlanoConta = dt.Rows[0]["Plano_Conta"].ToString();
+
+            return transacao;
+        }
+    }
+
+    public class Dashboard
+    {
+        public string Descricao { get; set; }
+        public double Total { get; set; }
+
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
+
+        public Dashboard()
+        {
+
+        }
+
+        //Recebe o contexto para acesso às variáveis de sessão.
+        public Dashboard(IHttpContextAccessor httpContextAccessor)
+        {
+            HttpContextAccessor = httpContextAccessor;
+        }
+
+        public List<Dashboard> Grafico(TransacaoModel transacao)
+        {
+            string data = $"{transacao.Data.Year}/{transacao.Data.Month}/{transacao.Data.Day}";
+            string dataFinal = $"{transacao.DataFinal.Year}/{transacao.DataFinal.Month}/{transacao.DataFinal.Day}";
+
+            string filtro = "";
+
+            if (transacao.Data.Year != 1 && transacao.DataFinal.Year != 1)
+            {
+                filtro += $" and (T.Data between '{data}' and '{dataFinal}')";
+            }
+            if (transacao.ContaId != 0)
+            {
+                filtro += $" and T.Conta_Id = {transacao.ContaId}";
+            }
+            List<Dashboard> lista = new List<Dashboard>();
+
+            string query = "select P.Descricao, sum(T.Valor) Total from Transacao T" +
+                           " inner join PlanoContas P on T.PlanoContas_Id = P.Id where T.Tipo = 'D' and" +
+                           " T.Usuario_Id =" + HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado") +
+                           $" {filtro} group by P.Descricao;";
+            DAL objDAL = new DAL();
+            DataTable dt = objDAL.Reader(query);
+            DataRow[] rows = dt.Select();
+            foreach (DataRow row in rows)
+            {
+                Dashboard dashboard = new Dashboard();
+                dashboard.Descricao = row["Descricao"].ToString();
+                dashboard.Total = double.Parse(row["Total"].ToString());
+                lista.Add(dashboard);
+            }
+            return lista;
+        }
     }
 }

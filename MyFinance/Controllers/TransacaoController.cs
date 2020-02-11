@@ -91,7 +91,7 @@ namespace MyFinance.Controllers
             transacao.HttpContextAccessor = HttpContextAccessor;
             ViewBag.Contas = transacao.CarregarContas();
 
-            if (transacao.Data.Year != 1 && transacao.DataFinal.Year != 1)
+            if (transacao.Data != null && transacao.DataFinal != null)
                 ViewBag.ListaTransacoes = transacao.EmitirExtrato();
             else
                 ViewBag.ListaTransacoes = null;
@@ -99,8 +99,50 @@ namespace MyFinance.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Dashboard()
         {
+            TransacaoModel obj = new TransacaoModel(HttpContextAccessor);
+            ViewBag.Contas = obj.CarregarContas();
+
+            ViewBag.Cores = null;
+            ViewBag.Labels = null;
+            ViewBag.Valores = null;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Dashboard(TransacaoModel transacao)
+        {
+            transacao.HttpContextAccessor = HttpContextAccessor;
+            ViewBag.Contas = transacao.CarregarContas();
+
+            if (transacao.Data != null && transacao.DataFinal != null)
+            {
+                Dashboard objDashboard = new Dashboard(HttpContextAccessor);
+                string valores = "";
+                string labels = "";
+                string cores = "";
+
+                var random = new Random();
+
+                foreach (Dashboard dashboard in objDashboard.Grafico(transacao))
+                {
+                    valores += dashboard.Total + ",";
+                    labels += "'" + dashboard.Descricao + "',";
+                    cores += "'" + String.Format("#{0:X6}", random.Next(0x1000000)) + "',";
+                }
+
+                ViewBag.Cores = cores;
+                ViewBag.Labels = labels;
+                ViewBag.Valores = valores;
+            }
+            else
+            {
+                ViewBag.Cores = null;
+                ViewBag.Labels = null;
+                ViewBag.Valores = null;
+            }
             return View();
         }
     }

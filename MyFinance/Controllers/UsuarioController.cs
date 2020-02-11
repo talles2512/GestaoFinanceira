@@ -60,5 +60,14 @@ namespace MyFinance.Controllers
         {
             return View();
         }
+
+
+        [HttpGet]
+        public IActionResult Teste(int id)
+        {
+            TransacaoModel obj = new TransacaoModel();
+            ViewBag.Registro = obj.GetTransacao(id);
+            return View();
+        }
     }
 }

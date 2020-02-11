@@ -1,7 +1,85 @@
-﻿
+﻿@model TransacaoModel
+
+<h3>Meu Dashboard</h3>
+
+<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+
+<div class="container">
+    <form asp-controller="Transacao" asp-action="Dashboard">
+        <div>
+            <div class="form-group">
+                <label for="data">Data inicial:</label>
+                <input type="date" class="form-control" asp-for="Data">
+            </div>
+            <div class="form-group">
+                <label for="data">Data final:</label>
+                <input type="date" class="form-control" asp-for="DataFinal">
+            </div>
+            <div class="form-group">
+                <label for="conta">Conta:</label>
+                <br />
+                <select class="form-control" asp-for="ContaId" id="contas">
+                    @{
+                        foreach (var item in (List<ContaModel>)ViewBag.Contas)
+                        {
+                            <option value="@item.Id.ToString()">@item.Nome.ToString()</option>
+                        }
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-block btn-success">Emitir Extrato</button>
+        </div>
+    </form>
+</div>
+<br />
+<br />
+
 @{
-    ViewData["Title"] = "Dashboard";
+    var check1 = ViewBag.Cores;
+    var check2 = ViewBag.Labels;
+    var check3 = ViewBag.Valores;
+    if (check1 != null && check2 != null && check3 != null)
+    {
+        if (check1 != "" && check2 != "" && check3 != "")
+        {
+            <div id="canvas-holder" style="width:60%" class="center-block">
+                <canvas id="chart-area"></canvas>
+            </div>
+            <script>
+		var randomScalingFactor = function() {
+			return Math.round(Math.random() * 100);
+		};
+
+		var config = {
+			type: 'pie',
+			data: {
+				datasets: [{
+					data: [
+						@Html.Raw(ViewBag.Valores)
+					],
+					backgroundColor: [
+						@Html.Raw(ViewBag.Cores)
+					],
+					label: 'Dataset 1'
+				}],
+				labels: [
+					@Html.Raw(ViewBag.Labels)
+				]
+			},
+			options: {
+				responsive: true
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('chart-area').getContext('2d');
+			window.myPie = new Chart(ctx, config);
+		};
+            </script>
+        }
+        else
+        {
+            <p class="text-center">Nenhum registro de transação encontrado...</p>
+        }
+    }
 }
-
-<h2>Dashboard</h2>
-
