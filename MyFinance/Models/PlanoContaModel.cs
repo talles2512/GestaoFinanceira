@@ -52,9 +52,8 @@ namespace MyFinance.Models
 
         public void RegistrarPlanoConta()
         {
-            int id = int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"));
             string query = $"insert into PlanoContas(Descricao,Tipo,Usuario_Id)" +
-                $"values('{Descricao}','{Tipo}',{id})";
+                $"values('{Descricao}','{Tipo}',{int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"))})";
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }
@@ -83,8 +82,7 @@ namespace MyFinance.Models
 
         public void AlterarPlanoConta()
         {
-            int id = int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"));
-            string query = $"update PlanoContas set Descricao = '{Descricao}',Tipo = '{Tipo}' where Usuario_Id = {id} and Id = {Id}";
+            string query = $"update PlanoContas set Descricao = '{Descricao}',Tipo = '{Tipo}' where Usuario_Id = {int.Parse(HttpContextAccessor.HttpContext.Session.GetString("IdUsuarioLogado"))} and Id = {Id}";
             DAL objDAL = new DAL();
             objDAL.NoQuery(query);
         }
